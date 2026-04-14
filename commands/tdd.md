@@ -5,6 +5,8 @@ argument-hint: <plan file path or slug>
 
 # TDD Execution
 
+**Announce first:** start your response with the literal line `**[nedflow:tdd] Phase 3: TDD Execution**` so the user sees the command fired.
+
 Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one commit. Atomic.
 
 ## Input
@@ -14,9 +16,11 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
 ## Protocol
 
 1. **Read the plan**. Enumerate tasks. Confirm none already ticked unless resuming.
-2. **For each un-ticked task N**:
-   1. Spawn sub-agent via `Agent` tool with `subagent_type: tdd-executor`.
-   2. Prompt (self-contained — the sub-agent sees none of this conversation):
+2. **Track progress:** call `TaskCreate` once with one entry per un-ticked plan task. Each entry's `content` is the task title from the plan. Initial `status: pending`. Keep the returned task IDs.
+3. **For each un-ticked task N**:
+   1. `TaskUpdate` the matching tracker entry → `status: in_progress`.
+   2. Spawn sub-agent via `Agent` tool with `subagent_type: tdd-executor`.
+   3. Prompt (self-contained — the sub-agent sees none of this conversation):
       ```
       Execute Task <N> from plan: <absolute plan path>
 
@@ -34,15 +38,16 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
 
       On failure (test red after green, lint/typecheck error): retry up to 2 times. If still failing, return without committing and report the blocker.
       ```
-   3. **Wait** for sub-agent return. Read summary.
-   4. **Verify** from parent:
+   4. **Wait** for sub-agent return. Read summary.
+   5. **Verify** from parent:
       - `git log -1 --format=%H%n%s` → matches reported SHA and the expected commit type.
       - `git show --stat HEAD` → only expected files touched (incl. plan file).
       - Plan file shows Task N checkboxes ticked.
-   5. **If sub-agent reported blocker**: stop. Surface to user. Do not dispatch next task.
-   6. **If verification fails** (wrong files, missing plan update): one corrective sub-agent with focused prompt. If it fails again, stop and surface.
-3. **Between tasks**: by default pause and let user say `continue` unless they requested non-stop (`--auto` or explicit).
-4. **End**: all tasks ticked → suggest `/review <base-branch>`.
+   6. **On success:** `TaskUpdate` tracker entry → `status: completed`.
+   7. **If sub-agent reported blocker**: stop. Leave tracker entry `in_progress`. Surface to user. Do not dispatch next task.
+   8. **If verification fails** (wrong files, missing plan update): one corrective sub-agent with focused prompt. If it fails again, stop and surface. Tracker stays `in_progress`.
+4. **Between tasks**: by default pause and let user say `continue` unless they requested non-stop (`--auto` or explicit).
+5. **End**: all tracker entries completed → suggest `/review <base-branch>`.
 
 ## Hard rules
 

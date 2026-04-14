@@ -5,6 +5,8 @@ argument-hint: <feature idea>
 
 # Brainstorm
 
+**Announce first:** start your response with the literal line `**[nedflow:brainstorm] Phase 1: Brainstorm**` so the user sees the command fired.
+
 Refine the user's idea until scope, constraints and success criteria are unambiguous. No implementation code. Produce a brainstorm note at the end.
 
 ## Input

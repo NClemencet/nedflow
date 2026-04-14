@@ -5,6 +5,8 @@ argument-hint: <bug description>
 
 # Debugging
 
+**Announce first:** start your response with the literal line `**[nedflow:debugging] Debug**` so the user sees the command fired.
+
 Fast path for bugs. Investigate → reproduce → red test → green fix → commit.
 
 ## Input
@@ -13,6 +15,7 @@ Fast path for bugs. Investigate → reproduce → red test → green fix → com
 
 ## Protocol
 
+0. **Track progress:** after the clarify step (if any), `TaskCreate` four entries: `investigate`, `reproduce in test`, `fix`, `verify`. Update `in_progress` / `completed` as you move through the protocol. Skip `reproduce in test` entry (mark `completed` with note) if the bug is not reproducible in code per step 4 below.
 1. **Clarify** (only if essential): ask for repro steps or error output if not provided. One round of questions max.
 2. **Investigate**:
    - Grep for error strings, function names, recent touched files

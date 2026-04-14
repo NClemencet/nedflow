@@ -5,6 +5,8 @@ argument-hint: <base-branch>
 
 # Review
 
+**Announce first:** start your response with the literal line `**[nedflow:review] Phase 4: Review**` so the user sees the command fired.
+
 Spawn three review sub-agents in parallel. Aggregate findings by severity into `.claude/reviews/<current-branch>-<date>.md`.
 
 ## Input
@@ -19,11 +21,14 @@ If missing: ask the user once, then abort if still missing. Do not assume.
    - Current branch: `git rev-parse --abbrev-ref HEAD`
    - Diff range: `$ARGUMENTS...HEAD`
    - Verify base exists: `git rev-parse --verify $ARGUMENTS` — abort with message if it fails.
-2. **Spawn 3 sub-agents IN PARALLEL** (single message, three `Agent` tool calls):
+2. **Track progress:** `TaskCreate` with three entries: `security review`, `refactor review`, `bug hunt`. All start `status: pending`.
+3. **Mark all three `in_progress`** via `TaskUpdate` (parallel dispatch).
+4. **Spawn 3 sub-agents IN PARALLEL** (single message, three `Agent` tool calls):
    - `security-reviewer`
    - `refactor-reviewer`
    - `bug-hunter`
-3. **Each sub-agent receives this prompt shape**:
+   As each returns, `TaskUpdate` the matching entry → `completed`.
+5. **Each sub-agent receives this prompt shape**:
    ```
    Review the diff of the current branch vs base `<base>`.
 
@@ -41,8 +46,8 @@ If missing: ask the user once, then abort if still missing. Do not assume.
 
    Return the raw finding list. No preamble.
    ```
-4. **Collect results**. Merge into a single report, grouped by severity (CRITICAL → HIGH → MEDIUM → LOW). Within each group, group by category (security / refactor / bugs).
-5. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md`. Create `.claude/reviews/` if absent.
+6. **Collect results**. Merge into a single report, grouped by severity (CRITICAL → HIGH → MEDIUM → LOW). Within each group, group by category (security / refactor / bugs).
+7. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md`. Create `.claude/reviews/` if absent.
 
 ## Report format
 

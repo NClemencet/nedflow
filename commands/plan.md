@@ -5,6 +5,8 @@ argument-hint: <slug or feature name>
 
 # Plan
 
+**Announce first:** start your response with the literal line `**[nedflow:plan] Phase 2: Plan**` so the user sees the command fired.
+
 Produce an executable plan. Every task must be runnable by a sub-agent with zero context from this conversation.
 
 ## Input
