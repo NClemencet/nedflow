@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "nedflow",
-      "source": ".",
+      "source": "./",
       "description": "Lightweight workflow plugin: brainstorm, plan, TDD via sub-agents, parallel multi-angle review, and targeted debugging.",
       "version": "0.1.0",
       "category": "workflow",
