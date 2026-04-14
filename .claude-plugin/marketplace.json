@@ -1,0 +1,16 @@
+{
+  "name": "nedflow",
+  "owner": {
+    "name": "Nicolas Clemencet"
+  },
+  "plugins": [
+    {
+      "name": "nedflow",
+      "source": ".",
+      "description": "Lightweight workflow plugin: brainstorm, plan, TDD via sub-agents, parallel multi-angle review, and targeted debugging.",
+      "version": "0.1.0",
+      "category": "workflow",
+      "strict": false
+    }
+  ]
+}

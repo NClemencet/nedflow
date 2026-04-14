@@ -1,0 +1,10 @@
+{
+  "name": "nedflow",
+  "version": "0.1.0",
+  "description": "Lightweight workflow plugin: brainstorm, plan, TDD via sub-agents, parallel multi-angle review, and targeted debugging.",
+  "author": {
+    "name": "Nicolas Clemencet"
+  },
+  "license": "MIT",
+  "keywords": ["workflow", "tdd", "planning", "review", "debugging"]
+}
