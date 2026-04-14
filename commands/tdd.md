@@ -28,8 +28,7 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
       1. Red: write the failing test, run it, verify fails for the right reason.
       2. Green: minimum implementation to pass.
       3. Verify: run full relevant test suite.
-      4. Tick Task <N> checkboxes in the plan file.
-      5. Stage changes INCLUDING the plan file, then commit.
+      4. Stage task files ONLY (do NOT modify or stage the plan file), then commit.
 
       Commit format: `type(scope): description` (imperative, lowercase, no period).
       No `Co-Authored-By` line.
@@ -41,13 +40,15 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
    4. **Wait** for sub-agent return. Read summary.
    5. **Verify** from parent:
       - `git log -1 --format=%H%n%s` → matches reported SHA and the expected commit type.
-      - `git show --stat HEAD` → only expected files touched (incl. plan file).
-      - Plan file shows Task N checkboxes ticked.
+      - `git show --stat HEAD` → only expected task files touched. Plan file must NOT appear.
    6. **On success:** `TaskUpdate` tracker entry → `status: completed`.
    7. **If sub-agent reported blocker**: stop. Leave tracker entry `in_progress`. Surface to user. Do not dispatch next task.
-   8. **If verification fails** (wrong files, missing plan update): one corrective sub-agent with focused prompt. If it fails again, stop and surface. Tracker stays `in_progress`.
+   8. **If verification fails** (wrong files, plan file accidentally staged): one corrective sub-agent with focused prompt. If it fails again, stop and surface. Tracker stays `in_progress`.
 4. **Between tasks**: by default pause and let user say `continue` unless they requested non-stop (`--auto` or explicit).
-5. **End**: all tracker entries completed → suggest `/review <base-branch>`.
+5. **End (all tracker entries completed)**:
+   1. Edit the plan file: tick every `- [ ]` → `- [x]`.
+   2. `git add <plan file>` then commit: `chore(plan): complete <slug>`.
+   3. Suggest `/review <base-branch>`.
 
 ## Hard rules
 

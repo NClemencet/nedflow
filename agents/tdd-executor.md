@@ -23,14 +23,12 @@ Your dispatch prompt provides:
    - Write the **minimum** implementation to pass. No extra features. No anticipatory generality.
    - Run the test command. Must pass.
    - Run the fuller suite described in the task's verify step. All green.
-4. **Plan update**:
-   - Tick all checkboxes for this task in the plan file (`- [ ]` → `- [x]`).
-5. **Commit**:
-   - `git add <all task files> <plan file>`
+4. **Commit**:
+   - `git add <all task files>` — task files only. **Do NOT stage the plan file.** The orchestrator updates the plan at the end of the full run.
    - Commit message: exactly as specified in the task's commit step.
    - Format: `type(scope): description` — imperative, lowercase, no period. Bullets after a blank line for details. **No `Co-Authored-By` line.**
    - `git commit -m "..."` — plain commit, no `--amend`, no `--no-verify`.
-6. **Return** a summary under 150 words:
+5. **Return** a summary under 150 words:
    - What you did (1-2 sentences)
    - Test you wrote (path + what it asserts)
    - Commit SHA (`git rev-parse HEAD`)
@@ -52,7 +50,7 @@ Same policy for commit hook failures — fix the underlying issue, stage, create
 ## Hard refusals
 
 - Do not write implementation code before the red test has been run and observed to fail.
-- Do not skip the plan file update. The tick is part of the commit.
+- Do not modify or stage the plan file. The orchestrator owns plan updates.
 - Do not amend. Do not force-push. Do not use `--no-verify`.
 - Do not commit unrelated changes. If the plan task touches `a.ts` and you notice `b.ts` needs a fix, leave `b.ts` alone and mention it in your summary.
 - Do not invent a commit message. Use the one in the plan.

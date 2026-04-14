@@ -5,7 +5,7 @@ Plugin implementation is complete. This file documents the architecture for cont
 ## Design principles
 
 1. **Explicit over automatic.** User invokes each phase. No silent activation, no blocking hooks.
-2. **Atomic commits.** One TDD task → one commit. Plan file update is part of the same commit.
+2. **Atomic commits.** One TDD task → one commit, task files only. Plan file is updated once at the end of the run (`chore(plan): complete <slug>`). Live progress lives in the Claude Code TaskList, not in plan checkbox ticks.
 3. **Sub-agent isolation.** TDD tasks and review passes run in fresh contexts. The orchestrator only dispatches and verifies.
 4. **Parallel where independent.** Review runs 3 agents concurrently in one round-trip.
 5. **No hidden state.** Brainstorm, plan, and review artefacts live as files under `.claude/`.
@@ -56,9 +56,11 @@ nedflow/
 
 ### /tdd
 - Loop plan tasks
-- Dispatch one `tdd-executor` sub-agent per task
-- Verify commit SHA, touched files, plan tick after each task
+- `TaskCreate` one entry per un-ticked plan task; update status live
+- Dispatch one `tdd-executor` sub-agent per task — task files only, plan file untouched
+- Verify commit SHA and touched files after each task
 - Default: pause between tasks for user `continue`
+- Final step (after all tasks done): tick all plan checkboxes and commit `chore(plan): complete <slug>`
 - Never edit code directly — dispatch only
 
 ### /review
@@ -92,7 +94,7 @@ type(scope): description
 - **Input:** plan path + task number
 - **Output:** summary ≤150 words, commit SHA, deviations
 - **Retries:** 2 on lint/test failure; surface blocker on third
-- **Never:** amend, skip plan tick, commit unrelated changes
+- **Never:** amend, touch the plan file, commit unrelated changes
 
 ### security-reviewer / refactor-reviewer / bug-hunter
 - **Input:** base branch
