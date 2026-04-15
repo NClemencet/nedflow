@@ -23,9 +23,15 @@ User feature idea: `$ARGUMENTS`
    - **Pros / Cons** (bullets)
    - **Rough effort** (S/M/L)
    - **Risks**
-4. **Ask high-leverage questions** only. Skip yes/no questions whose answer doesn't change the chosen approach. Skip questions already answered by the codebase.
-5. **Wait for user pick**. Do not proceed without explicit choice.
+4. **Ask high-leverage questions** via `AskUserQuestion` (1-4 questions per call, 2-4 options each, "Other" auto-added). Skip questions whose answer doesn't change the chosen approach. Skip questions already answered by the codebase. Examples of good axes: scope (MVP / full / experiment), persistence (memory / disk / DB), surface (CLI / web / both), priority (perf / DX / correctness).
+5. **Pick approach** via `AskUserQuestion`: single-select, one option per proposal from step 3, label = approach name, description = 1-line summary + effort tag. User can pick "Other" to redirect. Do not proceed without an explicit selection.
 6. **Write brainstorm file** (see below).
+
+## Interaction style
+
+- Prefer `AskUserQuestion` over free-text Q&A whenever choices are discrete and bounded. More intuitive, fewer round-trips.
+- Free-text only when the answer is genuinely open-ended (e.g., naming, exact constraint values).
+- Batch related questions in a single `AskUserQuestion` call (max 4) to minimise interruptions.
 
 ## Output file
 

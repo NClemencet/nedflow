@@ -16,7 +16,7 @@ Fast path for bugs. Investigate → reproduce → red test → green fix → com
 ## Protocol
 
 0. **Track progress:** after the clarify step (if any), `TaskCreate` four entries: `investigate`, `reproduce in test`, `fix`, `verify`. Update `in_progress` / `completed` as you move through the protocol. Skip `reproduce in test` entry (mark `completed` with note) if the bug is not reproducible in code per step 4 below.
-1. **Clarify** (only if essential): ask for repro steps or error output if not provided. One round of questions max.
+1. **Clarify** (only if essential): use `AskUserQuestion` for bounded axes — e.g., reproducibility (always / intermittent / unknown), surface (logic / UI / network / build), severity (blocker / regression / minor). Free-text only for raw repro steps or error output. One round max.
 2. **Investigate**:
    - Grep for error strings, function names, recent touched files
    - Read relevant code
@@ -52,6 +52,7 @@ Commit SHA + one-sentence summary. If non-reproducible, include the `.claude/pla
 
 ## Rules
 
+- Prefer `AskUserQuestion` over free-text whenever choices are discrete. Batch related questions (max 4) in a single call.
 - One bug → one commit. No drive-by cleanup.
 - Never disable or delete the failing test once green.
 - If root cause is unclear, investigate more — do not ship a fix for a symptom.
