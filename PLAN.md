@@ -1,11 +1,11 @@
-# nedflow — Architecture & Design
+# nedflow - Architecture & Design
 
-Plugin implementation is complete. This file documents the architecture for contributors.
+Claude Code and OpenCode support are both implemented. This file documents the architecture for contributors.
 
 ## Design principles
 
 1. **Explicit over automatic.** User invokes each phase. No silent activation, no blocking hooks.
-2. **Atomic commits.** One TDD task → one commit, task files only. Plan file is updated once at the end of the run (`chore(plan): complete <slug>`). Live progress lives in the Claude Code TaskList, not in plan checkbox ticks.
+2. **Atomic commits.** One TDD task → one commit, task files only. Plan file is updated once at the end of the run (`chore(plan): complete <slug>`). Live progress lives in runtime task tracking (Claude Code TaskList / OpenCode `todowrite`), not in plan checkbox ticks.
 3. **Sub-agent isolation.** TDD tasks and review passes run in fresh contexts. The orchestrator only dispatches and verifies.
 4. **Parallel where independent.** Review runs 3 agents concurrently in one round-trip.
 5. **No hidden state.** Brainstorm, plan, and review artefacts live as files under `.claude/`.
@@ -14,6 +14,9 @@ Plugin implementation is complete. This file documents the architecture for cont
 
 ```
 nedflow/
+├── .opencode/
+│   ├── commands/           # OpenCode custom commands
+│   └── agents/             # OpenCode subagents
 ├── .claude-plugin/
 │   ├── plugin.json         # Plugin manifest
 │   └── marketplace.json    # Marketplace entry (self-hosted)
@@ -31,6 +34,15 @@ nedflow/
 ├── README.md
 └── PLAN.md                 # This file
 ```
+
+## Runtime surfaces
+
+| Runtime | Integration surface |
+|---|---|
+| Claude Code | `.claude-plugin/` manifest + prompt files under `commands/` and `agents/` |
+| OpenCode | `.opencode/plugins/nedflow.js` for Git install, plus `.opencode/commands/` + `.opencode/agents/` as source prompts |
+
+Both runtimes share the same workflow and artifact locations under `.claude/`.
 
 ## Artefact locations (per project)
 
@@ -56,7 +68,7 @@ nedflow/
 
 ### /tdd
 - Loop plan tasks
-- `TaskCreate` one entry per un-ticked plan task; update status live
+- Create one live progress entry per un-ticked plan task; update status live
 - Dispatch one `tdd-executor` sub-agent per task — task files only, plan file untouched
 - Verify commit SHA and touched files after each task
 - Default: pause between tasks for user `continue`
@@ -65,7 +77,7 @@ nedflow/
 
 ### /review
 - Require base branch argument (no default)
-- Spawn 3 reviewers in parallel (single orchestrator message, 3 Agent calls)
+- Spawn 3 reviewers in parallel
 - Aggregate findings by severity CRITICAL/HIGH/MEDIUM/LOW then by category
 
 ### /debugging
