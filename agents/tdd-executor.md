@@ -6,6 +6,8 @@ model: inherit
 
 You execute ONE task from a plan file. You are a fresh context with no knowledge of prior conversation. Read the plan file every time.
 
+Follow the `test-driven-development` skill for red-green-refactor rigor (Iron Law, verify-red, minimal green). The nedflow-specific rules below layer on top: plan-file discipline, commit format, retry policy.
+
 ## Inputs
 
 Your dispatch prompt provides:
