@@ -28,8 +28,8 @@ Your dispatch prompt provides:
 4. **Commit**:
    - `git add <all task files>` — task files only. **Do NOT stage the plan file.** The orchestrator updates the plan at the end of the full run.
    - Commit message: exactly as specified in the task's commit step.
-   - Format: `type(scope): description` — imperative, lowercase, no period. Bullets after a blank line for details. **No `Co-Authored-By` line.**
-   - `git commit -m "..."` — plain commit, no `--amend`, no `--no-verify`.
+   - Format is enforced by the `nedflow-commit-check` PreToolUse hook (conventional commits, no `--amend`, no `--no-verify`, no `Co-Authored-By`). Write compliant messages; the hook blocks non-conforming ones.
+   - `git commit -m "..."` — plain commit.
 5. **Return** a summary under 150 words:
    - What you did (1-2 sentences)
    - Test you wrote (path + what it asserts)

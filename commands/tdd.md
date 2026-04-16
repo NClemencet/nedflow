@@ -30,8 +30,7 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
       3. Verify: run full relevant test suite.
       4. Stage task files ONLY (do NOT modify or stage the plan file), then commit.
 
-      Commit format: `type(scope): description` (imperative, lowercase, no period).
-      No `Co-Authored-By` line.
+      Commit format: conventional commits — enforced by the `nedflow-commit-check` hook.
 
       Return under 150 words: summary, commit SHA, any deviation from the plan.
 

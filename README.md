@@ -1,6 +1,6 @@
 # nedflow
 
-Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, four sub-agents, no hooks.
+Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, four sub-agents, one commit-format hook.
 
 ## Workflow
 
@@ -31,16 +31,18 @@ Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, fou
 
 ## Commit convention
 
-Every commit emitted by nedflow follows:
+Conventional commits, enforced by the bundled `nedflow-commit-check` PreToolUse hook:
 
 ```
 type(scope): description
 ```
 
-- Types: `feat|fix|refactor|docs|chore|test`
+- Types: `feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert`
 - Imperative, lowercase, no period
 - Bullets after blank line for details when "why" is non-obvious
-- **No `Co-Authored-By` line**
+- **No `Co-Authored-By` line**, no `--amend`, no `--no-verify` — the hook blocks them
+
+The hook script lives at `bin/nedflow-commit-check.sh`; declaration at `hooks/hooks.json`. It fails-open on `-F file` and heredoc-built messages (can't parse reliably).
 
 ## Review severity scale
 
@@ -127,7 +129,7 @@ Or keep them committed if you want the brainstorm/plan/review history to live wi
 
 ## Design notes
 
-- **No blocking hooks.** Review is explicit via `/review`, not pre-commit. Keeps the loop fast.
+- **Minimal hooks.** Only a lightweight commit-format guard. Review is explicit via `/review`, not pre-commit. Keeps the loop fast.
 - **Sub-agent per TDD task.** Each task runs in a fresh context - atomic commits, bounded blast radius, no context pollution.
 - **Parallel review.** Security / refactor / bugs run in one round-trip. Severity-tagged findings merge into one report.
 - **`/debugging` skips brainstorm/plan.** Bugs don't need 3 approaches - they need a failing test and a fix.
