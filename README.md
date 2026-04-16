@@ -132,6 +132,10 @@ Or keep them committed if you want the brainstorm/plan/review history to live wi
 - **Parallel review.** Security / refactor / bugs run in one round-trip. Severity-tagged findings merge into one report.
 - **`/debugging` skips brainstorm/plan.** Bugs don't need 3 approaches - they need a failing test and a fix.
 
+## Credits
+
+Inspired by [superpowers](https://github.com/obra/superpowers/) by Jesse Vincent. The `brainstorming` and `test-driven-development` skills are adapted from superpowers — trimmed and re-aligned for the nedflow pipeline.
+
 ## License
 
 MIT
