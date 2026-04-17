@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "nedflow-commit-check.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/nedflow-commit-check.sh\""
           }
         ]
       }
