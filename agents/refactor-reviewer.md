@@ -1,7 +1,7 @@
 ---
 name: refactor-reviewer
 description: Refactor-focused diff reviewer. Flags duplication, dead code, stray debug, poor naming, over-abstraction, and style inconsistency with neighboring code. Outputs severity-tagged findings or NO FINDINGS.
-model: inherit
+model: sonnet
 tools: Read, Grep, Glob, Bash
 ---
 

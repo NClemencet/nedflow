@@ -20,7 +20,7 @@ User feature idea: `$ARGUMENTS` (if invoked via `/brainstorm`) — otherwise use
 ## Protocol
 
 1. **Restate** the idea in one sentence. Confirm with user.
-2. **Research** the codebase if needed (Grep/Glob/Read) to check existing patterns, conflicts, reusable pieces. Bounded — don't read the whole repo.
+2. **Research** the codebase if needed — dispatch a `code-explorer` Agent (`subagent_type: code-explorer`) with a focused prompt: which patterns, files, or APIs to look for (existing helpers, naming conventions, conflicts). Include returned findings in the brainstorm file under "Research notes". Give the explorer specific questions; do not ask it to read the whole repo.
 3. **Propose 2-3 approaches** (2 if narrow, up to 4 if genuinely distinct). Each:
    - **Approach name** (short)
    - **How it works** (2-3 sentences)

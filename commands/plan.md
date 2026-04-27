@@ -16,11 +16,12 @@ Produce an executable plan. Every task must be runnable by a sub-agent with zero
 ## Protocol
 
 1. **Locate brainstorm** — look for `.claude/plans/*-$ARGUMENTS.brainstorm.md` (most recent if multiple). If found, read it. If not, proceed from conversation context but warn that a brainstorm is recommended.
-2. **Derive plan path** — same slug as brainstorm, today's date: `.claude/plans/YYYY-MM-DD-<slug>.md`. If no brainstorm, slug from `$ARGUMENTS`.
-3. **Resolve gaps** — if brainstorm is missing key decisions (test framework, file layout, error handling style, breaking-change policy), use `AskUserQuestion` to fill them. Bounded axes only; free-text for naming or paths.
-4. **Draft plan** using the template below.
-5. **Self-check** before writing: every task has an exact test, exact code intent, exact commit message. No "TODO", no "tbd". If you can't fill a section, ask via `AskUserQuestion` rather than fabricating.
-6. **Write file**.
+2. **Research codebase** — dispatch a `code-explorer` Agent (`subagent_type: code-explorer`) to verify file paths, check the test framework and patterns in use, find import conventions, and confirm whether any of the planned utilities already exist. Use findings to fill the Files section and task sketches accurately.
+3. **Derive plan path** — same slug as brainstorm, today's date: `.claude/plans/YYYY-MM-DD-<slug>.md`. If no brainstorm, slug from `$ARGUMENTS`.
+4. **Resolve gaps** — if brainstorm is missing key decisions (test framework, file layout, error handling style, breaking-change policy), use `AskUserQuestion` to fill them. Bounded axes only; free-text for naming or paths.
+5. **Draft plan** using the template below.
+6. **Self-check** before writing: every task has an exact test, exact code intent, exact commit message. No "TODO", no "tbd". If you can't fill a section, ask via `AskUserQuestion` rather than fabricating.
+7. **Write file**.
 
 ## Plan template
 

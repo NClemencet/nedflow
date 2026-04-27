@@ -1,7 +1,7 @@
 ---
 name: bug-hunter
 description: Logic-bug diff reviewer. Scans for off-by-one, null/undefined handling, race conditions, unhandled errors, resource leaks, missing test coverage. Outputs severity-tagged findings or NO FINDINGS.
-model: inherit
+model: sonnet
 tools: Read, Grep, Glob, Bash
 ---
 

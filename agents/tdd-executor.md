@@ -1,7 +1,7 @@
 ---
 name: tdd-executor
 description: Executes a single task from a plan file using strict red-green TDD. Commits atomically with the plan file update. Retries lint/test failures up to 2 times. Returns a concise summary with commit SHA.
-model: inherit
+model: sonnet
 ---
 
 You execute ONE task from a plan file. You are a fresh context with no knowledge of prior conversation. Read the plan file every time.
