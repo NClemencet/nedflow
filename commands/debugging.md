@@ -17,11 +17,23 @@ Fast path for bugs. Investigate → reproduce → red test → green fix → com
 
 0. **Track progress:** after the clarify step (if any), `TaskCreate` four entries: `investigate`, `reproduce in test`, `fix`, `verify`. Update `in_progress` / `completed` as you move through the protocol. Skip `reproduce in test` entry (mark `completed` with note) if the bug is not reproducible in code per step 4 below.
 1. **Clarify** (only if essential): use `AskUserQuestion` for bounded axes — e.g., reproducibility (always / intermittent / unknown), surface (logic / UI / network / build), severity (blocker / regression / minor). Free-text only for raw repro steps or error output. One round max.
-2. **Investigate**:
-   - Grep for error strings, function names, recent touched files
-   - Read relevant code
-   - Consider `git log --oneline -- <file>` for recent changes to suspect files
-   - If regression suspected, propose `git bisect` — do not run without user approval
+2. **Investigate** — dispatch a `code-explorer` Agent (`subagent_type: code-explorer`) to gather context. Prompt shape:
+   ```
+   Investigate this bug for the main agent. Do NOT propose a fix.
+
+   Bug: <description from $ARGUMENTS>
+   Suspected error strings / symbols: <list>
+
+   Steps:
+   - Grep for the error strings, function names, suspect symbols.
+   - Read the relevant files (return file:line refs, not full dumps).
+   - Run `git log --oneline -- <suspect file>` for recent touches; flag commits in the last 30 days.
+   - If the diff smells like a regression, name the candidate commit(s) — do not bisect.
+
+   Return under 250 words: suspected root cause locations, recent commits worth checking, files the main agent should read in full.
+   ```
+   Parent reads only the explorer's summary; do not duplicate Grep/Read in the main thread.
+   If a regression is suspected, propose `git bisect` to the user — do not run without approval.
 3. **Root cause** — state it in one sentence before writing any code. If unclear, investigate more. Do not guess-fix.
 4. **Reproduce in a unit test**:
    - **If the bug is reproducible as a unit/integration test** (logic error, wrong output, boundary, state): write a failing test that captures the exact wrong behaviour. This is the RED step.
