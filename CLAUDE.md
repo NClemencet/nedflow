@@ -37,12 +37,12 @@ Each phase is user-invoked. No automatic progression.
 | Dir | Contents |
 |---|---|
 | `commands/` | One `.md` per slash command (brainstorm, plan, tdd, review, debugging) |
-| `agents/` | Sub-agent prompts: `tdd-executor`, `security-reviewer`, `refactor-reviewer`, `bug-hunter` |
+| `agents/` | Sub-agent prompts: `tdd-executor`, `security-reviewer`, `refactor-reviewer`, `bug-hunter`, plus Claude-only `code-explorer` helper |
 | `skills/` | Reusable embedded skills: `brainstorming/SKILL.md`, `test-driven-development/SKILL.md` |
 | `.opencode/commands/` | OpenCode versions of the same commands |
 | `.opencode/agents/` | OpenCode versions of the same sub-agents |
 
-Claude Code reads `commands/` and `agents/` via `.claude-plugin/plugin.json`. OpenCode reads `.opencode/` via `.opencode/plugins/nedflow.js` (a runtime adapter that loads the same prompt files).
+Claude Code reads `commands/` and `agents/` via `.claude-plugin/plugin.json`. OpenCode reads `.opencode/` via `.opencode/plugins/nedflow.js` (a runtime adapter that loads the same prompt files, maps the commit guard to `tool.execute.before`, and uses the built-in `explore` subagent where Claude uses `code-explorer`).
 
 ### Sub-agent contracts
 

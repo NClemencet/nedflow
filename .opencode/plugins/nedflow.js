@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
+const CONVENTIONAL_COMMIT_RE = /^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\([a-z0-9._/-]+\))?!?: [a-z].+[^.]$/;
 
 const stripFrontmatter = (content) => {
   const match = content.match(/^---\n[\s\S]*?\n---\n?/);
@@ -13,6 +14,54 @@ const stripFrontmatter = (content) => {
 const readPrompt = (relativePath) => {
   const filePath = path.join(repoRoot, relativePath);
   return stripFrontmatter(fs.readFileSync(filePath, 'utf8')).trim();
+};
+
+const isGitCommitCommand = (command) => /(^|[\s;|&(])git\s+commit(\s|$)/.test(command);
+
+const hasUnparseableMessageSource = (command) => {
+  if (/(^|\s)(-F|--file(=|\s))/.test(command)) return true;
+  if (/<<[^\s]*[A-Z_]/.test(command)) return true;
+  return false;
+};
+
+const extractFirstMessage = (command) => {
+  const match = /(?:^|\s)(?:-m|--message)(?:=|\s+)(?:"((?:[^"\\]|\\.)*)"|'([^']*)'|(\S+))/.exec(command);
+  const subject = match?.[1] ?? match?.[2] ?? match?.[3];
+  if (!subject) return null;
+  return subject.split('\n')[0];
+};
+
+const validateCommitCommand = (command) => {
+  if (!command || !isGitCommitCommand(command)) return null;
+
+  if (/(^|\s)--amend([\s=]|$)/.test(command)) {
+    return 'BLOCKED by nedflow: --amend forbidden. Create a NEW commit instead.';
+  }
+
+  if (/(^|\s)--no-verify([\s=]|$)/.test(command)) {
+    return 'BLOCKED by nedflow: --no-verify forbidden. Fix the hook failure at its source.';
+  }
+
+  if (/co-authored-by:/i.test(command)) {
+    return "BLOCKED by nedflow: Co-Authored-By trailer forbidden in this plugin's commit contract.";
+  }
+
+  if (hasUnparseableMessageSource(command)) return null;
+
+  const subject = extractFirstMessage(command);
+  if (!subject) return null;
+
+  if (!CONVENTIONAL_COMMIT_RE.test(subject)) {
+    return [
+      'BLOCKED by nedflow: commit subject does not match conventional commits.',
+      `  Got:      ${subject}`,
+      '  Expected: type(scope): description',
+      '  Rules:    type in {feat,fix,docs,style,refactor,perf,test,chore,build,ci,revert}',
+      '            lowercase start, imperative mood, no trailing period',
+    ].join('\n');
+  }
+
+  return null;
 };
 
 const commands = {
@@ -123,6 +172,12 @@ export const NedflowPlugin = async () => {
           prompt: readPrompt(definition.path),
         };
       }
+    },
+    'tool.execute.before': async (input, output) => {
+      if (input.tool !== 'bash') return;
+
+      const error = validateCommitCommand(output.args?.command);
+      if (error) throw new Error(error);
     },
   };
 };

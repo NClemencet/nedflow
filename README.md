@@ -1,6 +1,6 @@
 # nedflow
 
-Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, four sub-agents, one commit-format hook.
+Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, four nedflow sub-agents, and one commit-format guard wired into both runtimes.
 
 ## Workflow
 
@@ -29,9 +29,11 @@ Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, fou
 | `refactor-reviewer` | Diff scan: dead code, duplication, naming | read-only + bash |
 | `bug-hunter` | Diff scan: logic bugs, edge cases, coverage | read-only + bash |
 
+OpenCode also reuses its built-in `explore` subagent during `/plan` and `/debugging` to replace Claude Code's internal `code-explorer` helper.
+
 ## Commit convention
 
-Conventional commits, enforced by the bundled `nedflow-commit-check` PreToolUse hook:
+Conventional commits, enforced by the bundled `nedflow-commit-check` hook in Claude Code and by the OpenCode plugin's `tool.execute.before` hook:
 
 ```
 type(scope): description
@@ -115,6 +117,8 @@ The workflow is the same in both runtimes. Only the integration surface changes.
 | `AskUserQuestion` | `question` |
 | `TaskCreate` / `TaskUpdate` | `todowrite` |
 | `Agent` | `task` / subagents |
+| `code-explorer` helper agent | built-in `explore` subagent |
+| `PreToolUse` Bash hook | plugin `tool.execute.before` hook |
 
 ## Per-project setup
 

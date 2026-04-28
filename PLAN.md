@@ -40,7 +40,7 @@ nedflow/
 | Runtime | Integration surface |
 |---|---|
 | Claude Code | `.claude-plugin/` manifest + prompt files under `commands/` and `agents/` |
-| OpenCode | `.opencode/plugins/nedflow.js` for Git install, plus `.opencode/commands/` + `.opencode/agents/` as source prompts |
+| OpenCode | `.opencode/plugins/nedflow.js` for Git install, plus `.opencode/commands/` + `.opencode/agents/` as source prompts and `tool.execute.before` commit enforcement |
 
 Both runtimes share the same workflow and artifact locations under `.claude/`.
 
@@ -63,6 +63,7 @@ Both runtimes share the same workflow and artifact locations under `.claude/`.
 
 ### /plan
 - Read latest brainstorm for slug (if any)
+- In OpenCode, delegate repository discovery to the built-in `explore` subagent
 - Produce executable plan with exact test code, commands, commit messages
 - Reject own output if any "TODO" or "TBD" appears — brainstorm was incomplete
 
@@ -82,6 +83,7 @@ Both runtimes share the same workflow and artifact locations under `.claude/`.
 
 ### /debugging
 - Investigate first, state root cause before fixing
+- In OpenCode, delegate the initial investigation to the built-in `explore` subagent
 - Write failing unit test **when reproducible in code**
 - Dispatch `tdd-executor` for the fix
 - Document manually when non-reproducible

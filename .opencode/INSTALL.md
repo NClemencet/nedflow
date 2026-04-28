@@ -48,13 +48,15 @@ To pin a specific version:
 
 ## How it works
 
-The plugin registers the commands and subagents shipped in this repository into OpenCode config at startup.
+The plugin registers the commands and subagents shipped in this repository into OpenCode config at startup, and enforces nedflow commit-message rules before `bash` runs `git commit`.
 
 Runtime mapping:
 
 - `AskUserQuestion` -> `question`
 - `TaskCreate` / `TaskUpdate` -> `todowrite`
 - `Agent` -> `task` / subagents
+- Claude `code-explorer` helper -> built-in `explore` subagent
+- Claude `PreToolUse` commit hook -> OpenCode `tool.execute.before`
 
 ## Troubleshooting
 
