@@ -42,7 +42,7 @@ To pin a specific version:
 
 ```json
 {
-  "plugin": ["nedflow@git+https://github.com/NClemencet/nedflow.git#v0.1.3"]
+  "plugin": ["nedflow@git+https://github.com/NClemencet/nedflow.git#v0.1.8"]
 }
 ```
 
