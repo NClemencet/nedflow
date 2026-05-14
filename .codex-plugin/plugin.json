@@ -1,0 +1,26 @@
+{
+  "name": "nedflow",
+  "version": "0.1.8",
+  "description": "Lightweight Codex workflow plugin: brainstorm, plan, TDD execution, parallel review, and targeted debugging.",
+  "author": {
+    "name": "Nicolas Clemencet"
+  },
+  "repository": "https://github.com/NClemencet/nedflow",
+  "license": "MIT",
+  "keywords": ["workflow", "tdd", "planning", "review", "debugging", "codex"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nedflow",
+    "shortDescription": "Structured TDD workflow for Codex.",
+    "longDescription": "nedflow adds a compact product-development loop for Codex: brainstorm options, produce executable TDD plans, execute tasks with atomic commits, review diffs from security/refactor/bug angles, and handle focused debugging.",
+    "developerName": "Nicolas Clemencet",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Run nedflow brainstorm for this feature",
+      "Create a nedflow TDD plan",
+      "Review this branch with nedflow"
+    ],
+    "brandColor": "#2563EB"
+  }
+}

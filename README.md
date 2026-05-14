@@ -1,6 +1,6 @@
 # nedflow
 
-Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, four nedflow sub-agents, and one commit-format guard wired into both runtimes.
+Lightweight workflow pack for Codex, Claude Code, and OpenCode. Five workflow phases, review helpers, and a commit-format contract.
 
 ## Workflow
 
@@ -11,6 +11,8 @@ Lightweight workflow pack for Claude Code and OpenCode. Five slash commands, fou
 ```
 
 ## Commands
+
+In Codex, invoke these as `nedflow <phase> ...`; Codex writes native workflow artifacts under `.codex/nedflow/`. Claude Code and OpenCode keep the slash-command interface and `.claude/` artifact paths.
 
 | Command | Phase | Purpose |
 |---|---|---|
@@ -54,6 +56,26 @@ The hook script lives at `bin/nedflow-commit-check.sh`; declaration at `hooks/ho
 - MEDIUM / LOW inform — author decides
 
 ## Install
+
+### Codex plugin
+
+Use this repository as a local Codex plugin. From the repository root, the Codex manifest lives at:
+
+```sh
+.codex-plugin/plugin.json
+```
+
+The Codex entrypoint is the `nedflow` skill. Ask Codex for any phase with:
+
+```text
+nedflow brainstorm <feature idea>
+nedflow plan <slug or feature>
+nedflow tdd <plan path or slug>
+nedflow review <base-branch>
+nedflow debugging <bug description>
+```
+
+Codex writes native workflow files under `.codex/nedflow/` by default, while still reading existing `.claude/plans/` files for compatibility.
 
 ### Claude Code plugin (local symlink)
 
@@ -109,22 +131,23 @@ Restart OpenCode. The custom commands will appear as `/brainstorm`, `/plan`, `/t
 
 ## Runtime mapping
 
-The workflow is the same in both runtimes. Only the integration surface changes.
+The workflow is the same in all three runtimes. Only the integration surface changes.
 
-| Claude Code | OpenCode |
-|---|---|
-| `.claude-plugin/plugin.json` | `.opencode/commands/*.md` + `.opencode/agents/*.md` |
-| `AskUserQuestion` | `question` |
-| `TaskCreate` / `TaskUpdate` | `todowrite` |
-| `Agent` | `task` / subagents |
-| `code-explorer` helper agent | built-in `explore` subagent |
-| `PreToolUse` Bash hook | plugin `tool.execute.before` hook |
+| Codex | Claude Code | OpenCode |
+|---|---|---|
+| `.codex-plugin/plugin.json` + `skills/nedflow/SKILL.md` | `.claude-plugin/plugin.json` | `.opencode/commands/*.md` + `.opencode/agents/*.md` |
+| concise user questions | `AskUserQuestion` | `question` |
+| task tracker / plan updates | `TaskCreate` / `TaskUpdate` | `todowrite` |
+| optional Codex sub-agents | `Agent` | `task` / subagents |
+| local codebase search or Codex explorer | `code-explorer` helper agent | built-in `explore` subagent |
+| commit contract in skill instructions | `PreToolUse` Bash hook | plugin `tool.execute.before` hook |
 
 ## Per-project setup
 
 Recommended additions to project `.gitignore`:
 
 ```
+.codex/nedflow/
 .claude/plans/
 .claude/reviews/
 ```
