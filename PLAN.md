@@ -5,7 +5,7 @@ Claude Code and OpenCode support are both implemented. This file documents the a
 ## Design principles
 
 1. **Explicit over automatic.** User invokes each phase. No silent activation, no blocking hooks.
-2. **Atomic commits.** One TDD task → one commit, task files only. Plan file is updated once at the end of the run (`chore(plan): complete <slug>`). Live progress lives in runtime task tracking (Claude Code TaskList / OpenCode `todowrite`), not in plan checkbox ticks.
+2. **Atomic commits.** One TDD task → one commit, task files only. Plan/brainstorm artifacts under `.claude/` stay local and are not staged or committed, because consumer repositories may gitignore `.claude/*`. Live progress lives in runtime task tracking (Claude Code TaskList / OpenCode `todowrite`), not in plan checkbox ticks.
 3. **Sub-agent isolation.** TDD tasks and review passes run in fresh contexts. The orchestrator only dispatches and verifies.
 4. **Parallel where independent.** Review runs 3 agents concurrently in one round-trip.
 5. **No hidden state.** Brainstorm, plan, and review artefacts live as files under `.claude/`.
@@ -73,7 +73,7 @@ Both runtimes share the same workflow and artifact locations under `.claude/`.
 - Dispatch one `tdd-executor` sub-agent per task — task files only, plan file untouched
 - Verify commit SHA and touched files after each task
 - Default: pause between tasks for user `continue`
-- Final step (after all tasks done): tick all plan checkboxes and commit `chore(plan): complete <slug>`
+- Final step (after all tasks done): optionally tick local plan checkboxes, but do not stage or commit `.claude/*` artifacts
 - Never edit code directly — dispatch only
 
 ### /review

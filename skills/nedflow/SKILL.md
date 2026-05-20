@@ -153,8 +153,8 @@ Protocol:
    - Mark the tracker entry complete.
 4. Pause between tasks unless the user requested automatic execution.
 5. After all tasks are complete:
-   - Tick the plan checkboxes.
-   - Commit the plan update as `chore(plan): complete <slug>`.
+   - Optionally tick the plan checkboxes in the local plan file.
+   - Do not stage or commit the plan file; `.claude/` may be gitignored by the consumer repository.
    - Suggest `nedflow review <base-branch>`.
 
 If Codex sub-agents are available and the user asked for the nedflow TDD workflow, each plan task may be delegated to a fresh worker. The worker prompt must include the absolute plan path, task number, red/green/verify/commit rules, and the requirement to avoid staging the plan file.

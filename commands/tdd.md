@@ -45,8 +45,8 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
    8. **If verification fails** (wrong files, plan file accidentally staged): one corrective sub-agent with focused prompt. If it fails again, stop and surface. Tracker stays `in_progress`.
 4. **Between tasks**: by default pause and let user say `continue` unless they requested non-stop (`--auto` or explicit).
 5. **End (all tracker entries completed)**:
-   1. Edit the plan file: tick every `- [ ]` → `- [x]`.
-   2. `git add <plan file>` then commit: `chore(plan): complete <slug>`.
+   1. Optionally tick every `- [ ]` → `- [x]` in the local plan file.
+   2. Do not stage or commit the plan file; `.claude/` may be gitignored by the consumer repository.
    3. Suggest `/review <base-branch>`.
 
 ## Hard rules

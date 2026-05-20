@@ -9,6 +9,8 @@ description: "Phase 1 of the nedflow pipeline. Use this BEFORE any creative work
 
 Turn an idea into a shared design. Refine scope, constraints and success criteria until unambiguous. Walk the design tree, resolving dependencies one-by-one. For each question, provide your recommended answer.
 
+Do not create any git commit during this phase. The brainstorm artifact is local-only under `.claude/` and may be gitignored.
+
 <HARD-GATE>
 Do NOT write code, scaffold files, or invoke an implementation skill until the user has explicitly picked an approach. This applies to every project regardless of perceived simplicity — "simple" tasks are where unexamined assumptions cause the most wasted work.
 </HARD-GATE>
@@ -51,7 +53,7 @@ After user selects an approach, determine the slug:
 - Prefix with today's date (`YYYY-MM-DD`)
 - Path: `.claude/plans/YYYY-MM-DD-<slug>.brainstorm.md`
 
-Create `.claude/plans/` if absent. Suggest user add it to `.gitignore` if they want notes kept local.
+Create `.claude/plans/` if absent. Do not stage or commit the brainstorm file; `.claude/` may be gitignored by the consumer repository.
 
 Template:
 

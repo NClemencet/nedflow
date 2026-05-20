@@ -9,6 +9,8 @@ agent: build
 
 Refine the user's idea until scope, constraints and success criteria are unambiguous. No implementation code. Produce a brainstorm note at the end.
 
+Do not create any git commit during this phase. The brainstorm artifact is local-only under `.claude/` and may be gitignored.
+
 ## Input
 
 User feature idea: `$ARGUMENTS`
@@ -40,7 +42,7 @@ After user selects an approach, determine the slug:
 - Prefix with today's date (YYYY-MM-DD)
 - Path: `.claude/plans/YYYY-MM-DD-<slug>.brainstorm.md`
 
-Create `.claude/plans/` if absent. Suggest user add it to `.gitignore` if they want brainstorm/plan notes kept local.
+Create `.claude/plans/` if absent. Do not stage or commit the brainstorm file; `.claude/` may be gitignored by the consumer repository.
 
 Content template:
 

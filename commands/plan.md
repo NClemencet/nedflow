@@ -9,6 +9,8 @@ argument-hint: <slug or feature name>
 
 Produce an executable plan. Every task must be runnable by a sub-agent with zero context from this conversation.
 
+Do not create any git commit during this phase. The plan artifact is local-only under `.claude/` and may be gitignored; commits are only created later by `/tdd` when executing plan tasks.
+
 ## Input
 
 `$ARGUMENTS` — a slug matching an existing brainstorm file (preferred), or a fresh feature name.
@@ -72,7 +74,7 @@ Produce an executable plan. Every task must be runnable by a sub-agent with zero
 ## Rules
 
 - Prefer `AskUserQuestion` (1-4 questions, 2-4 options each) over free-text for any decision with discrete choices. Batch related questions in a single call.
-- Every task ends with a commit. Commits stay atomic.
+- Every task must specify the commit that `/tdd` will create when executing it. `/plan` itself must not commit anything.
 - Commit format: `type(scope): description` (imperative, lowercase, no period). Types: `feat|fix|refactor|docs|chore|test`. Bullets after blank line for details. No `Co-Authored-By`.
 - Tasks must be executable independently by a sub-agent reading only the plan file.
 - Prefer 3-7 tasks. If more than 10, re-scope — likely too large for a single branch.
