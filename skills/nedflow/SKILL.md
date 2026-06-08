@@ -175,12 +175,25 @@ Protocol:
    - Current branch: `git rev-parse --abbrev-ref HEAD`
    - Base validity: `git rev-parse --verify <base>`
    - Diff range: `<base>...HEAD`
-2. Review the diff from three angles:
-   - Security: secrets, injection, auth, crypto, path traversal, unsafe deserialization.
-   - Refactor: dead code, duplication, naming, stray debug, over-abstraction.
-   - Bugs: edge cases, null handling, races, unhandled errors, resource leaks, missing tests.
-3. Use parallel sub-agents when the user requested nedflow review and the environment permits delegation. Otherwise, perform the three passes locally.
-4. Write:
+2. Review the diff from three angles, using the matching Codex reviewer skills when they are available:
+   - `security-reviewer`: secrets, injection, auth, crypto, path traversal, unsafe deserialization.
+   - `refactor-reviewer`: dead code, duplication, naming, stray debug, over-abstraction.
+   - `bug-hunter`: edge cases, null handling, races, unhandled errors, resource leaks, missing tests.
+3. Run the three passes in parallel when delegation/sub-agent tools are available. If not, perform the same three passes locally in one session, keeping the categories separate and preserving each reviewer skill's output contract.
+4. Each pass must return either raw findings in this shape:
+
+```text
+- [<CRITICAL|HIGH|MEDIUM|LOW>] <path>:<line> - <one-line problem> -> <concrete fix>
+```
+
+or exactly:
+
+```text
+NO FINDINGS
+```
+
+5. Aggregate the three raw result sets by severity and category.
+6. Write:
 
 ```text
 .codex/nedflow/reviews/<branch>-YYYY-MM-DD.md

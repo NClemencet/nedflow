@@ -31,6 +31,12 @@ In Codex, invoke these as `nedflow <phase> ...`; Codex writes native workflow ar
 | `refactor-reviewer` | Diff scan: dead code, duplication, naming | read-only + bash |
 | `bug-hunter` | Diff scan: logic bugs, edge cases, coverage | read-only + bash |
 
+In Codex, the review helpers are also packaged as skills so `nedflow review <base-branch>` can load them through the Codex plugin manifest:
+
+- `security-reviewer`
+- `refactor-reviewer`
+- `bug-hunter`
+
 OpenCode also reuses its built-in `explore` subagent during `/plan` and `/debugging` to replace Claude Code's internal `code-explorer` helper.
 
 ## Commit convention
