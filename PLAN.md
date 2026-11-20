@@ -31,6 +31,11 @@ nedflow/
 │   ├── security-reviewer.md
 │   ├── refactor-reviewer.md
 │   └── bug-hunter.md
+├── skills/                 # brainstorming, test-driven-development (+ Codex-only skills)
+├── hooks/hooks.json        # PreToolUse commit guard declaration
+├── bin/                    # nedflow-commit-check.sh
+├── tests/                  # commit guard test table (Claude hook + OpenCode guard)
+├── evals/                  # `claude plugin eval` cases
 ├── README.md
 └── PLAN.md                 # This file
 ```
@@ -63,7 +68,7 @@ Both runtimes share the same workflow and artifact locations under `.claude/`.
 
 ### /plan
 - Read latest brainstorm for slug (if any)
-- In OpenCode, delegate repository discovery to the built-in `explore` subagent
+- Delegate repository discovery to the runtime's built-in explorer (Claude Code `Explore` with `model: haiku`, OpenCode `explore`)
 - Produce executable plan with exact test code, commands, commit messages
 - Reject own output if any "TODO" or "TBD" appears — brainstorm was incomplete
 
@@ -83,20 +88,20 @@ Both runtimes share the same workflow and artifact locations under `.claude/`.
 
 ### /debugging
 - Investigate first, state root cause before fixing
-- In OpenCode, delegate the initial investigation to the built-in `explore` subagent
+- Delegate the initial investigation to the runtime's built-in explorer (Claude Code `Explore` with `model: haiku`, OpenCode `explore`)
 - Write failing unit test **when reproducible in code**
 - Dispatch `tdd-executor` for the fix
 - Document manually when non-reproducible
 
 ## Commit convention
 
-Enforced by `tdd-executor`:
+Enforced by the commit guard (Claude Code `PreToolUse` hook, OpenCode `tool.execute.before`):
 
 ```
 type(scope): description
 ```
 
-- `type`: `feat|fix|refactor|docs|chore|test`
+- `type`: `feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert`
 - Imperative, lowercase, no trailing period
 - Detail bullets after one blank line
 - **No `Co-Authored-By` line**
@@ -118,7 +123,7 @@ type(scope): description
 
 ## Extension points
 
-- **New review angle** — add an agent under `agents/`, register it in `/review` command as a 4th parallel call.
+- **New review angle** — add an agent under `agents/`, register it in `/review` command as a 4th parallel call (`subagent_type: "nedflow:<name>"`).
 - **New phase** — add a command under `commands/`, reference artefacts in `.claude/`.
 - **Language-specific TDD** — fork `tdd-executor` (e.g. `tdd-executor-rust`) with stricter tooling, select in `/tdd` based on repo detection.
 

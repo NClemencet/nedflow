@@ -37,7 +37,9 @@ In Codex, the review helpers are also packaged as skills so `nedflow review <bas
 - `refactor-reviewer`
 - `bug-hunter`
 
-OpenCode also reuses its built-in `explore` subagent during `/plan` and `/debugging` to replace Claude Code's internal `code-explorer` helper.
+Codebase research during `/brainstorm`, `/plan` and `/debugging` uses each runtime's built-in explorer: Claude Code's `Explore` agent (dispatched with `model: haiku`) and OpenCode's `explore` subagent.
+
+In Claude Code, plugin agents are namespaced: the commands dispatch `nedflow:tdd-executor`, `nedflow:security-reviewer`, and so on. The five phase commands are user-only (`disable-model-invocation: true`), so a phase never starts on its own.
 
 ## Commit convention
 
@@ -52,7 +54,7 @@ type(scope): description
 - Bullets after blank line for details when "why" is non-obvious
 - **No `Co-Authored-By` line**, no `--amend`, no `--no-verify` — the hook blocks them
 
-The hook script lives at `bin/nedflow-commit-check.sh`; declaration at `hooks/hooks.json`. It fails-open on `-F file` and heredoc-built messages (can't parse reliably).
+The hook script lives at `bin/nedflow-commit-check.sh`; declaration at `hooks/hooks.json` (filtered with `"if": "Bash(git *)"`, so it only runs for git commands). It isolates the `git [global options] commit` segment of the command, quote-aware, so `git commit -am "..."`, `git -c k=v commit ...` and chained commands are checked, while a message that merely mentions `--amend` is not blocked. Denials are returned as a `permissionDecision: "deny"` JSON payload. It fails-open on `-F file`, heredoc and `$(...)`-built messages (can't parse reliably).
 
 ## Review severity scale
 
@@ -83,21 +85,23 @@ nedflow debugging <bug description>
 
 Codex writes native workflow files under `.codex/nedflow/` by default, while still reading existing `.claude/plans/` files for compatibility.
 
-### Claude Code plugin (local symlink)
-
-```sh
-ln -s /home/nc/Code/nedflow ~/.claude/plugins/nedflow
-```
-
-Restart Claude Code. Verify with `/plugin` - nedflow should appear.
-
-### Claude Code marketplace (share with team)
+### Claude Code marketplace (recommended)
 
 In any Claude Code session:
 
 ```
-/plugin marketplace add <git-url-of-this-repo>
+/plugin marketplace add <git-url-or-local-path-of-this-repo>
 /plugin install nedflow@nedflow
+```
+
+To pick up a new release: `/plugin marketplace update nedflow`, then `/plugin update nedflow@nedflow` and restart.
+
+### Claude Code (local development)
+
+Load the working copy for one session, without installing it:
+
+```sh
+claude --plugin-dir /path/to/nedflow
 ```
 
 ### OpenCode commands + agents
@@ -125,7 +129,7 @@ If you are using this repo directly in OpenCode, no extra install step is needed
 To reuse nedflow in another project, either copy the files or point OpenCode at this pack:
 
 ```sh
-OPENCODE_CONFIG_DIR=/home/nc/Code/nedflow/.opencode opencode
+OPENCODE_CONFIG_DIR=/path/to/nedflow/.opencode opencode
 ```
 
 You can also copy the files into either of these locations:
@@ -145,7 +149,7 @@ The workflow is the same in all three runtimes. Only the integration surface cha
 | concise user questions | `AskUserQuestion` | `question` |
 | task tracker / plan updates | `TaskCreate` / `TaskUpdate` | `todowrite` |
 | optional Codex sub-agents | `Agent` | `task` / subagents |
-| local codebase search or Codex explorer | `code-explorer` helper agent | built-in `explore` subagent |
+| local codebase search or Codex explorer | built-in `Explore` agent (`model: haiku`) | built-in `explore` subagent |
 | commit contract in skill instructions | `PreToolUse` Bash hook | plugin `tool.execute.before` hook |
 
 ## Per-project setup
@@ -158,7 +162,29 @@ Recommended additions to project `.gitignore`:
 .claude/reviews/
 ```
 
-Or keep them committed if you want the brainstorm/plan/review history to live with the branch.
+nedflow never stages or commits these artifacts (brainstorm notes, plans, debugging notes, review reports): they stay local. Only the code changes from `/tdd` and `/debugging` are committed.
+
+## Development
+
+There is no build step.
+
+```sh
+claude plugin validate .                                                     # manifests, commands, agents, skills, hooks
+bash tests/commit-check.sh                                                   # Claude Code commit hook
+NEDFLOW_HOOK_RUNNER="node tests/opencode-hook.mjs" bash tests/commit-check.sh  # OpenCode commit guard
+```
+
+`claude plugin validate . --strict` fails only on the expected warning that the root `CLAUDE.md` (contributor notes) is not shipped as plugin context.
+
+Behavioural evals live in `evals/` and run with [`claude plugin eval`](https://code.claude.com/docs/en/plugins). Each case runs with and without the plugin, so the headline number is the uplift:
+
+```sh
+claude plugin eval . --scaffold --allow-tools Bash Write --judge-model sonnet --no-publish
+```
+
+- `--scaffold` runs `evals/03-review-requires-base/scaffold.sh` (creates a throwaway git repo).
+- Granting `Bash` needs the Claude Code sandbox (`bubblewrap` and `socat`); without it, drop `--allow-tools` and skip `04-commit-guard` with `--case`.
+- Every run is a full Claude session: 5 cases × 3 runs × 2 arms. Pilot with `--runs 1` first.
 
 ## Design notes
 
