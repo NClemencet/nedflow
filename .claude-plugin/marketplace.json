@@ -1,5 +1,6 @@
 {
   "name": "nedflow",
+  "description": "nedflow: a lightweight brainstorm → plan → TDD → review workflow for Claude Code.",
   "owner": {
     "name": "Nicolas Clemencet"
   },
@@ -8,9 +9,7 @@
       "name": "nedflow",
       "source": "./",
       "description": "Lightweight workflow plugin: brainstorm, plan, TDD via sub-agents, parallel multi-angle review, and targeted debugging.",
-      "version": "0.1.8",
-      "category": "workflow",
-      "strict": false
+      "category": "workflow"
     }
   ]
 }

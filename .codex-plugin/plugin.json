@@ -1,6 +1,6 @@
 {
   "name": "nedflow",
-  "version": "0.1.8+codex.review-skills",
+  "version": "0.2.0",
   "description": "Lightweight Codex workflow plugin: brainstorm, plan, TDD execution, parallel review, and targeted debugging.",
   "author": {
     "name": "Nicolas Clemencet"
