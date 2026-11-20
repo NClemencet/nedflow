@@ -1,6 +1,8 @@
 ---
 description: Phase 4 — parallel multi-angle review (security, refactor, bugs) of the diff vs a base branch, aggregated report with severity
 argument-hint: <base-branch>
+disable-model-invocation: true
+allowed-tools: Bash(git branch --show-current), Bash(git rev-parse:*)
 ---
 
 # Review
@@ -18,16 +20,16 @@ If missing: ask the user once, then abort if still missing. Do not assume.
 ## Protocol
 
 1. **Resolve scope**:
-   - Current branch: `git rev-parse --abbrev-ref HEAD`
+   - Current branch: `git branch --show-current` (empty means detached HEAD — then use `git rev-parse --short HEAD` in the report name)
    - Diff range: `$ARGUMENTS...HEAD`
    - Verify base exists: `git rev-parse --verify $ARGUMENTS` — abort with message if it fails.
-2. **Track progress:** `TaskCreate` with three entries: `security review`, `refactor review`, `bug hunt`. All start `status: pending`.
-3. **Mark all three `in_progress`** via `TaskUpdate` (parallel dispatch).
+2. **Track progress:** create three tasks — one `TaskCreate` call each, all in a single message — with `subject`: `Security review`, `Refactor review`, `Bug hunt` (and a matching `activeForm`). If task tools are unavailable, skip tracking.
+3. **Mark all three `in_progress`** via `TaskUpdate` (`taskId`, `status`) — they run in parallel.
 4. **Spawn 3 sub-agents IN PARALLEL** (single message, three `Agent` tool calls):
-   - `security-reviewer`
-   - `refactor-reviewer`
-   - `bug-hunter`
-   As each returns, `TaskUpdate` the matching entry → `completed`.
+   - `subagent_type: "nedflow:security-reviewer"`
+   - `subagent_type: "nedflow:refactor-reviewer"`
+   - `subagent_type: "nedflow:bug-hunter"`
+   As each returns, `TaskUpdate` the matching task → `completed`.
 5. **Each sub-agent receives this prompt shape**:
    ```
    Review the diff of the current branch vs base `<base>`.
@@ -47,7 +49,7 @@ If missing: ask the user once, then abort if still missing. Do not assume.
    Return the raw finding list. No preamble.
    ```
 6. **Collect results**. Merge into a single report, grouped by severity (CRITICAL → HIGH → MEDIUM → LOW). Within each group, group by category (security / refactor / bugs).
-7. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md`. Create `.claude/reviews/` if absent.
+7. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md` (replace `/` in the branch name with `-`, e.g. `feat-login-2026-01-31.md`). Create `.claude/reviews/` if absent.
 
 ## Report format
 

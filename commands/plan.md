@@ -1,6 +1,7 @@
 ---
 description: Phase 2 — write an executable TDD plan to .claude/plans/<date>-<slug>.md based on the brainstorm note
 argument-hint: <slug or feature name>
+disable-model-invocation: true
 ---
 
 # Plan
@@ -18,7 +19,7 @@ Do not create any git commit during this phase. The plan artifact is local-only 
 ## Protocol
 
 1. **Locate brainstorm** — look for `.claude/plans/*-$ARGUMENTS.brainstorm.md` (most recent if multiple). If found, read it. If not, proceed from conversation context but warn that a brainstorm is recommended.
-2. **Research codebase** — dispatch a `code-explorer` Agent (`subagent_type: code-explorer`) to verify file paths, check the test framework and patterns in use, find import conventions, and confirm whether any of the planned utilities already exist. Use findings to fill the Files section and task sketches accurately.
+2. **Research codebase** — dispatch the built-in `Explore` agent (`subagent_type: "Explore"`, `model: "haiku"`) to verify file paths, check the test framework and patterns in use, find import conventions, and confirm whether any of the planned utilities already exist. End the prompt with: "Do not modify files. Return ≤200 words: **Found** (`path:line` + one-line summary each), **Not found**, **Worth reading**." Use findings to fill the Files section and task sketches accurately.
 3. **Derive plan path** — same slug as brainstorm, today's date: `.claude/plans/YYYY-MM-DD-<slug>.md`. If no brainstorm, slug from `$ARGUMENTS`.
 4. **Resolve gaps** — if brainstorm is missing key decisions (test framework, file layout, error handling style, breaking-change policy), use `AskUserQuestion` to fill them. Bounded axes only; free-text for naming or paths.
 5. **Draft plan** using the template below.
@@ -75,7 +76,7 @@ Do not create any git commit during this phase. The plan artifact is local-only 
 
 - Prefer `AskUserQuestion` (1-4 questions, 2-4 options each) over free-text for any decision with discrete choices. Batch related questions in a single call.
 - Every task must specify the commit that `/tdd` will create when executing it. `/plan` itself must not commit anything.
-- Commit format: `type(scope): description` (imperative, lowercase, no period). Types: `feat|fix|refactor|docs|chore|test`. Bullets after blank line for details. No `Co-Authored-By`.
+- Commit format: `type(scope): description` (imperative, lowercase, no period). Types: `feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert` — the same list the `nedflow-commit-check` hook enforces. Bullets after blank line for details. No `Co-Authored-By`.
 - Tasks must be executable independently by a sub-agent reading only the plan file.
 - Prefer 3-7 tasks. If more than 10, re-scope — likely too large for a single branch.
 

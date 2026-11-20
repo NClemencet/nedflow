@@ -1,13 +1,22 @@
 ---
 description: Phase 3 — execute a plan task-by-task via tdd-executor sub-agents, atomic commits, 2 retries on failure
 argument-hint: <plan file path or slug>
+disable-model-invocation: true
+allowed-tools: Bash(git branch --show-current), Bash(git status --short), Bash(git log:*), Bash(git show:*)
 ---
 
 # TDD Execution
 
 **Announce first:** start your response with the literal line `**[nedflow:tdd] Phase 3: TDD Execution**` so the user sees the command fired.
 
-Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one commit. Atomic.
+Dispatch each plan task to a fresh `nedflow:tdd-executor` sub-agent. One task → one commit. Atomic.
+
+## Context
+
+- Current branch: !`git branch --show-current`
+- Working tree: !`git status --short`
+
+If the working tree has uncommitted changes unrelated to the plan, warn the user before dispatching — the executor stages task files only, but a dirty tree makes the post-commit verification ambiguous.
 
 ## Input
 
@@ -16,10 +25,10 @@ Dispatch each plan task to a fresh `tdd-executor` sub-agent. One task → one co
 ## Protocol
 
 1. **Read the plan**. Enumerate tasks. Confirm none already ticked unless resuming.
-2. **Track progress:** call `TaskCreate` once with one entry per un-ticked plan task. Each entry's `content` is the task title from the plan. Initial `status: pending`. Keep the returned task IDs.
+2. **Track progress:** create one task per un-ticked plan task — one `TaskCreate` call each, all in a single message — with `subject` = the plan task title (e.g. `Task 1: parse config`) and a matching `activeForm`. Keep the returned task IDs. If task tools are unavailable, skip tracking.
 3. **For each un-ticked task N**:
-   1. `TaskUpdate` the matching tracker entry → `status: in_progress`.
-   2. Spawn sub-agent via `Agent` tool with `subagent_type: tdd-executor`.
+   1. `TaskUpdate` the matching task (`taskId`) → `status: in_progress`.
+   2. Spawn sub-agent via `Agent` tool with `subagent_type: "nedflow:tdd-executor"`.
    3. Prompt (self-contained — the sub-agent sees none of this conversation):
       ```
       Execute Task <N> from plan: <absolute plan path>
