@@ -16,39 +16,50 @@ const readPrompt = (relativePath) => {
   return stripFrontmatter(fs.readFileSync(filePath, 'utf8')).trim();
 };
 
-const isGitCommitCommand = (command) => /(^|[\s;|&(])git\s+commit(\s|$)/.test(command);
+// Quote-aware pieces shared with bin/nedflow-commit-check.sh — keep both in sync.
+const QUOTED = String.raw`"(?:[^"\\]|\\.)*"|'[^']*'`;
+const COMMIT_SEGMENT_RE = new RegExp(
+  String.raw`(?:^|[\s;|&(])git(?:\s+(?:-[Cc]\s+(?:${QUOTED}|\S+)|--?[A-Za-z][\w-]*(?:=\S+)?))*\s+commit(?=\s|$)((?:${QUOTED}|\\.|[^;&|\n"'])*)`,
+  's',
+);
+const QUOTED_GLOBAL_RE = new RegExp(QUOTED, 'gs');
 
-const hasUnparseableMessageSource = (command) => {
-  if (/(^|\s)(-F|--file(=|\s))/.test(command)) return true;
-  if (/<<[^\s]*[A-Z_]/.test(command)) return true;
-  return false;
-};
+// Arguments of the `git [global options] commit` invocation, up to the next
+// unquoted shell separator, or null when the command is not a commit.
+const extractCommitSegment = (command) => COMMIT_SEGMENT_RE.exec(command)?.[1] || null;
 
-const extractFirstMessage = (command) => {
-  const match = /(?:^|\s)(?:-m|--message)(?:=|\s+)(?:"((?:[^"\\]|\\.)*)"|'([^']*)'|(\S+))/.exec(command);
+const extractFirstMessage = (segment) => {
+  const match = /(?:^|\s)(?:-[a-zA-Z]*m|--message)(?:=|\s+|(?=["']))(?:"((?:[^"\\]|\\.)*)"|'([^']*)'|(\S+))/s.exec(segment);
   const subject = match?.[1] ?? match?.[2] ?? match?.[3];
   if (!subject) return null;
   return subject.split('\n')[0];
 };
 
 const validateCommitCommand = (command) => {
-  if (!command || !isGitCommitCommand(command)) return null;
+  if (!command) return null;
+  const segment = extractCommitSegment(command);
+  if (!segment) return null;
 
-  if (/(^|\s)--amend([\s=]|$)/.test(command)) {
+  // Flags are checked outside quoted strings, so a message mentioning --amend is fine.
+  const unquoted = segment.replace(QUOTED_GLOBAL_RE, '');
+
+  if (/(^|\s)--amend([\s=]|$)/.test(unquoted)) {
     return 'BLOCKED by nedflow: --amend forbidden. Create a NEW commit instead.';
   }
 
-  if (/(^|\s)--no-verify([\s=]|$)/.test(command)) {
-    return 'BLOCKED by nedflow: --no-verify forbidden. Fix the hook failure at its source.';
+  if (/(^|\s)(--no-verify|-[aqsve]*n[aqsve]*)([\s=]|$)/.test(unquoted)) {
+    return 'BLOCKED by nedflow: --no-verify (-n) forbidden. Fix the hook failure at its source.';
   }
 
-  if (/co-authored-by:/i.test(command)) {
+  if (/co-authored-by:/i.test(segment)) {
     return "BLOCKED by nedflow: Co-Authored-By trailer forbidden in this plugin's commit contract.";
   }
 
-  if (hasUnparseableMessageSource(command)) return null;
+  // Fail-open on message sources we can't parse: -F file, heredoc, $(...).
+  if (/(^|\s)(-[a-zA-Z]*F|--file)([\s=]|$)/.test(unquoted)) return null;
+  if (/<<|\$\(|`/.test(segment)) return null;
 
-  const subject = extractFirstMessage(command);
+  const subject = extractFirstMessage(segment);
   if (!subject) return null;
 
   if (!CONVENTIONAL_COMMIT_RE.test(subject)) {
@@ -87,7 +98,7 @@ const commands = {
   },
   debugging: {
     path: '.opencode/commands/debugging.md',
-    description: 'Targeted bug investigation and fix. Short-circuits brainstorm/plan. Writes a failing unit test when reproducible, then drives a fix via tdd-executor.',
+    description: 'Targeted bug investigation and fix. Short-circuits brainstorm/plan. Writes a failing unit test when reproducible, then drives a fix via the tdd-executor agent.',
     agent: 'build',
   },
 };
