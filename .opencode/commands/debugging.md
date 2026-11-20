@@ -37,7 +37,7 @@ Fast path for bugs. Investigate -> reproduce -> red test -> green fix -> commit.
 3. **Root cause** - state it in one sentence before writing any code. If unclear, investigate more. Do not guess-fix.
 4. **Reproduce in a unit test**:
    - **If the bug is reproducible as a unit/integration test** (logic error, wrong output, boundary, state): write a failing test that captures the exact wrong behavior. This is the RED step.
-   - **If not reproducible in code** (UI-only race, intermittent network, environmental): document the investigation and manual repro in `.claude/plans/YYYY-MM-DD-<slug>.debugging.md`, then proceed to fix without an automated test. Note the gap explicitly in the commit body.
+   - **If not reproducible in code** (UI-only race, intermittent network, environmental): document the investigation and manual repro in `.claude/plans/YYYY-MM-DD-<slug>.debugging.md`, then proceed to fix without an automated test. Note the gap explicitly in the commit body. The debugging note stays local: do not stage or commit it.
 5. **Fix via subagent**:
    - Spawn `tdd-executor` via the `task` tool with the failing test already in place (or without, if non-reproducible). Prompt:
      ```

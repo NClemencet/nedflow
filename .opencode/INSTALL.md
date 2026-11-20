@@ -55,7 +55,7 @@ Runtime mapping:
 - `AskUserQuestion` -> `question`
 - `TaskCreate` / `TaskUpdate` -> `todowrite`
 - `Agent` -> `task` / subagents
-- Claude `code-explorer` helper -> built-in `explore` subagent
+- Claude built-in `Explore` agent -> built-in `explore` subagent
 - Claude `PreToolUse` commit hook -> OpenCode `tool.execute.before`
 
 ## Troubleshooting

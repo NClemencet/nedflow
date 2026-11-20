@@ -47,7 +47,7 @@ If missing: ask the user once, then abort if still missing. Do not assume.
    Return the raw finding list. No preamble.
    ```
 6. **Collect results**. Merge into a single report, grouped by severity (CRITICAL -> HIGH -> MEDIUM -> LOW). Within each group, group by category (security / refactor / bugs).
-7. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md`. Create `.claude/reviews/` if absent.
+7. **Write** `.claude/reviews/<branch>-YYYY-MM-DD.md` (replace `/` in the branch name with `-`, e.g. `feat-login-2026-01-31.md`). Create `.claude/reviews/` if absent.
 
 ## Report format
 

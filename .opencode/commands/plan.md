@@ -75,7 +75,7 @@ Do not create any git commit during this phase. The plan artifact is local-only 
 
 - Prefer the `question` tool (1-4 questions, 2-4 options each) over free-text for any decision with discrete choices. Batch related questions in a single call.
 - Every task must specify the commit that `/tdd` will create when executing it. `/plan` itself must not commit anything.
-- Commit format: `type(scope): description` (imperative, lowercase, no period). Types: `feat|fix|refactor|docs|chore|test`. Bullets after blank line for details. No `Co-Authored-By`.
+- Commit format: `type(scope): description` (imperative, lowercase, no period). Types: `feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert` — the same list the nedflow commit guard enforces. Bullets after blank line for details. No `Co-Authored-By`.
 - Tasks must be executable independently by a subagent reading only the plan file.
 - Prefer 3-7 tasks. If more than 10, re-scope - likely too large for a single branch.
 
