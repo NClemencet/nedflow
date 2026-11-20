@@ -1,6 +1,9 @@
 ---
 name: refactor-reviewer
 description: "Use during nedflow review or code review when a maintainability-only diff pass is needed. Flags duplication, dead code, stray debug, poor naming, over-abstraction, magic values, redundant comments, and style drift. Outputs severity-tagged findings or NO FINDINGS."
+# Codex-only skill: hidden from Claude Code (Codex ignores these keys).
+disable-model-invocation: true
+user-invocable: false
 ---
 
 # Refactor Reviewer

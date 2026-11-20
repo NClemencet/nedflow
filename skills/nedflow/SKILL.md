@@ -1,6 +1,9 @@
 ---
 name: nedflow
 description: "Use when the user asks for the nedflow workflow in Codex, including /brainstorm, /plan, /tdd, /review, /debugging, or phrases like nedflow brainstorm, nedflow plan, nedflow TDD, nedflow review, and nedflow debugging."
+# Codex-only skill: hidden from Claude Code (Codex ignores these keys).
+disable-model-invocation: true
+user-invocable: false
 ---
 
 # nedflow for Codex
@@ -33,6 +36,7 @@ If the user asks for "nedflow" without naming a phase, infer the phase from cont
   - Plans: `.codex/nedflow/plans/`
   - Reviews: `.codex/nedflow/reviews/`
 - If the repository already contains `.claude/plans/` or the user references a Claude/OpenCode plan, read and reuse it rather than migrating it.
+- Workflow artifacts (brainstorm notes, plans, debugging notes, review reports) stay local: never stage or commit them. Only task code changes are committed.
 - Use today's date in `YYYY-MM-DD` format for generated files.
 - Slugs are 3-5 words, lowercase, kebab-case.
 - Commit subjects must follow: `type(scope): description`
@@ -154,7 +158,7 @@ Protocol:
 4. Pause between tasks unless the user requested automatic execution.
 5. After all tasks are complete:
    - Optionally tick the plan checkboxes in the local plan file.
-   - Do not stage or commit the plan file; `.claude/` may be gitignored by the consumer repository.
+   - Do not stage or commit the plan file; `.codex/nedflow/` and `.claude/` may be gitignored by the consumer repository.
    - Suggest `nedflow review <base-branch>`.
 
 If Codex sub-agents are available and the user asked for the nedflow TDD workflow, each plan task may be delegated to a fresh worker. The worker prompt must include the absolute plan path, task number, red/green/verify/commit rules, and the requirement to avoid staging the plan file.
@@ -198,6 +202,8 @@ NO FINDINGS
 ```text
 .codex/nedflow/reviews/<branch>-YYYY-MM-DD.md
 ```
+
+Replace `/` in the branch name with `-` (e.g. `feat-login-2026-01-31.md`).
 
 Report format:
 

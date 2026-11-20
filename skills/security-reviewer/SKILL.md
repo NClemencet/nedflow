@@ -1,6 +1,9 @@
 ---
 name: security-reviewer
 description: "Use during nedflow review or code review when a security-only diff pass is needed. Scans for secrets, injection, auth bypass, unsafe deserialization, path traversal, weak crypto, insecure defaults, and dependency risk. Outputs severity-tagged findings or NO FINDINGS."
+# Codex-only skill: hidden from Claude Code (Codex ignores these keys).
+disable-model-invocation: true
+user-invocable: false
 ---
 
 # Security Reviewer

@@ -1,6 +1,9 @@
 ---
 name: bug-hunter
 description: "Use during nedflow review or code review when a logic-bug diff pass is needed. Scans for off-by-one errors, null handling, races, unhandled errors, resource leaks, missing awaits, regression risk, and meaningful test gaps. Outputs severity-tagged findings or NO FINDINGS."
+# Codex-only skill: hidden from Claude Code (Codex ignores these keys).
+disable-model-invocation: true
+user-invocable: false
 ---
 
 # Bug Hunter
