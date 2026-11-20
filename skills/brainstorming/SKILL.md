@@ -22,7 +22,7 @@ User feature idea: `$ARGUMENTS` (if invoked via `/brainstorm`) — otherwise use
 ## Protocol
 
 1. **Restate** the idea in one sentence. Confirm with user.
-2. **Research** the codebase if needed — dispatch a `code-explorer` Agent (`subagent_type: code-explorer`) with a focused prompt: which patterns, files, or APIs to look for (existing helpers, naming conventions, conflicts). Include returned findings in the brainstorm file under "Research notes". Give the explorer specific questions; do not ask it to read the whole repo.
+2. **Research** the codebase if needed — dispatch the built-in `Explore` agent (`subagent_type: "Explore"`, `model: "haiku"`) with a focused prompt: which patterns, files, or APIs to look for (existing helpers, naming conventions, conflicts). Give it specific questions; do not ask it to read the whole repo. End the prompt with: "Do not modify files. Return ≤200 words: **Found** (`path:line` + one-line summary each), **Not found** (what you searched for and did not find), **Worth reading** (related files you did not explore)." Include the returned findings in the brainstorm file under "Research notes".
 3. **Propose 2-3 approaches** (2 if narrow, up to 4 if genuinely distinct). Each:
    - **Approach name** (short)
    - **How it works** (2-3 sentences)

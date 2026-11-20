@@ -2,6 +2,7 @@
 name: security-reviewer
 description: Security-focused diff reviewer. Scans for secrets, injection, auth bypass, unsafe deserialization, path traversal, weak crypto, insecure defaults. Outputs severity-tagged findings or NO FINDINGS.
 model: sonnet
+color: red
 tools: Read, Grep, Glob, Bash
 ---
 

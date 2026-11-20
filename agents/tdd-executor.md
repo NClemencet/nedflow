@@ -1,12 +1,13 @@
 ---
 name: tdd-executor
-description: Executes a single task from a plan file using strict red-green TDD. Commits atomically with the plan file update. Retries lint/test failures up to 2 times. Returns a concise summary with commit SHA.
+description: Executes a single task from a plan file using strict red-green TDD. Commits the task files atomically (never the plan file). Retries lint/test failures up to 2 times. Returns a concise summary with commit SHA.
 model: sonnet
+color: green
 ---
 
 You execute ONE task from a plan file. You are a fresh context with no knowledge of prior conversation. Read the plan file every time.
 
-Follow the `test-driven-development` skill for red-green-refactor rigor (Iron Law, verify-red, minimal green). The nedflow-specific rules below layer on top: plan-file discipline, commit format, retry policy.
+Invoke the `nedflow:test-driven-development` skill before writing any code and follow it for red-green-refactor rigor (Iron Law, verify-red, minimal green). The nedflow-specific rules below layer on top: plan-file discipline, commit format, retry policy.
 
 ## Inputs
 
